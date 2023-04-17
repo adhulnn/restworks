@@ -3,9 +3,11 @@ from .models import movies,MovieList
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ViewSet,ModelViewSet
-from .serializer import MovieSerializer,MovieModelSer,UserSerializer
+from .serializer import MovieSerializer,MovieModelSer,UserSerializer,ReviewSerializer
 from rest_framework import status
 from rest_framework import permissions,authentication
+from rest_framework.decorators import action
+
 
 # Create your views here.
 class MovieLst(APIView):
@@ -150,3 +152,15 @@ class MovieApiMV(ModelViewSet):
     model=MovieList
     permission_classes=[permissions.IsAuthenticated]
     authentication_classes=[authentication.TokenAuthentication]
+
+    @action(detail=True, methods=['post'])
+    def add_reviews(self,request,*args,**kwargs):
+        id=kwargs.get("pk")
+        mv=MovieList.objects.get(id=id)
+        user=request.user
+        ser=ReviewSerializer(data=request.data,context={"user":user,"movie":mv})
+        if ser.is_valid():
+            ser.save()
+            return Response({"msg":"ADDED"})
+        else:
+            return Response({"msg":ser.errors},status=status.HTTP_400_BAD_REQUEST)
