@@ -14,3 +14,4 @@ class MovieList(models.Model):
     year=models.IntegerField()
     director=models.CharField(max_length=100)
     genre=models.CharField(max_length=100)
+    img=models.ImageField(upload_to="movie_pics",null=True)
