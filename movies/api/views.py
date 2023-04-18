@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import movies,MovieList
+from .models import movies,MovieList,Review
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ViewSet,ModelViewSet
@@ -146,6 +146,9 @@ class MovieApi(ViewSet):
         except:
             return Response({"msg":"invalid id"},status=status.HTTP_400_BAD_REQUEST)
 
+# using modelviewset
+#mvapi/2/add_reviews
+
 class MovieApiMV(ModelViewSet):
     serializer_class=MovieModelSer
     queryset=MovieList.objects.all()
@@ -164,3 +167,15 @@ class MovieApiMV(ModelViewSet):
             return Response({"msg":"ADDED"})
         else:
             return Response({"msg":ser.errors},status=status.HTTP_400_BAD_REQUEST)
+        
+    @action(detail=True, methods=['get'])
+    def get_reviews(self,request,*args,**kwargs):
+        id=kwargs.get("pk")
+        try:
+            mv=MovieList.objects.get(id=id)
+            review=Review.objects.filter(movie=mv)
+            dser=ReviewSerializer(review,many=True)
+            return Response(dser.data)
+        except:
+            return Response({"msg":"invalid id"},status=status.HTTP_400_BAD_REQUEST)
+    
