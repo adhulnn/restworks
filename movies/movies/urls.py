@@ -19,6 +19,10 @@ from django.urls import path
 from api.views import MovieLst,MovieItem,MovieModelList,MovieModelItem,UserCreationView,MovieApi,MovieApiMV
 from rest_framework.routers import DefaultRouter
 from rest_framework.authtoken import views
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
 router=DefaultRouter()
 router.register('movieapi',MovieApi,basename="mapi")
 router.register('mvapi',MovieApiMV,basename='mvapi')
@@ -30,5 +34,7 @@ urlpatterns = [
     path('movies/<int:mid>',MovieItem.as_view()),
     path('mv/<int:mid>',MovieModelItem.as_view()),
     path('user',UserCreationView.as_view()),
-    path('tauth/', views.obtain_auth_token)
+    path('tauth/', views.obtain_auth_token),
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]+router.urls
